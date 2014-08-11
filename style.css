@@ -37,16 +37,14 @@
     border-radius: 33px;
     -webkit-border-radius: 33px;
     -moz-border-radius: 33px;
-    border-color: black;
-    border-width: 1px;
-    border-style: solid;
+    border: 1px solid black;
 }
 
 .username {
     color: lightgray;
     position: absolute;
     left: 70px;
-    top: 0px;
+    top: 0;
     font-size: 10pt;
 }
 
@@ -59,8 +57,8 @@
 .timestamp{
     color: lightgray;
     position: absolute;
-    right: 0px;
-    bottom: 0px;
+    right: 0;
+    bottom: 0;
     text-align: right;
     font-size:10pt;
 }
