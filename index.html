@@ -14,11 +14,17 @@
   moment().format();
   moment().twitter();
 
+  // TODO: allow user to send messages
+
+  // TODO: finish UI
+
   var addNewTweet = function (tweet) {
     var div = $('<div />');
+    // TODO: make username and avatar clickable
     div.addClass('tweet').data('username', tweet.user);
     div.append($('<img />').addClass('avatar').attr('src', avatars[tweet.user]));
     div.append($('<div />').addClass('username').text('@' + tweet.user));
+    // TODO: parse message to make hashtags clickable
     div.append($('<div />').addClass('message').text(tweet.message));
     div.append($('<div />').addClass('timestamp').data('created', tweet.created_at).text(moment(tweet.created_at).twitterShort()));
     div.hide();
@@ -71,11 +77,11 @@
         if (window.moreBar === undefined) {
           window.moreBar = $('<div />').addClass('more').append($('<div />').addClass('more-count')).hide()
               .on('click', function(){
+                // TODO: fix this hackery
                 $(this).velocity('slideUp', {duration: 300}).detach();
                 $('.tweet:hidden').last().addClass('highlight');
                 $('.tweet:hidden').velocity('slideDown', {duration:500});
                 $('.highlight').first().velocity('scroll', {duration:500, offset:66}).removeClass('highlight');
-                //scrollTarget.removeClass('highlight')
               });
         }
         if ($('.more').length === 0) {
@@ -83,7 +89,7 @@
         }
         addNewTweet(arguments[i]);
         hiddenTweets = $('.tweet:hidden').length;
-        more = $('.more')
+        more = $('.more');
         if (hiddenTweets === 1) {
           $('.more-count').text('One new yowl');
         } else {
