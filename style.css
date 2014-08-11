@@ -1,0 +1,66 @@
+.home-stream {
+    width: 500px;
+}
+
+.tweet {
+    position: relative;
+    width: 100%;
+    transition: background-color 0.5s;
+}
+
+.tweet:hover {
+    background-color: #dedede;
+}
+
+.highlight {
+    background-color: lightyellow;
+}
+
+.more {
+    background-color: lightgray;
+    height: 32px;
+    text-align: center;
+    width: 100%;
+}
+
+.more-count {
+    line-height: 32px;
+}
+
+.hidden {
+    display: none;
+}
+
+.avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 33px;
+    -webkit-border-radius: 33px;
+    -moz-border-radius: 33px;
+    border-color: black;
+    border-width: 1px;
+    border-style: solid;
+}
+
+.username {
+    color: lightgray;
+    position: absolute;
+    left: 70px;
+    top: 0px;
+    font-size: 10pt;
+}
+
+.message{
+    position: absolute;
+    left: 70px;
+    top: 20px;
+}
+
+.timestamp{
+    color: lightgray;
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+    text-align: right;
+    font-size:10pt;
+}

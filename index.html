@@ -1,32 +1,102 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <script src="jquery.js"></script>
-    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/moment.js/2.7.0/moment.min.js"></script>
-    <script src="data_generator.js"></script>
-  </head>
-  <body>
-    <div class="home-stream"></div>
-    <script>
-      moment().format();
-      var show = function(tweet){
-        $('.home-stream').append($('<div />')
-                         .text('@' + tweet.user + ': '
-                                   + tweet.message + ' | '
-                                   + moment(tweet.created_at).fromNow()));
-      };
-      $(document).ready(function(){
-        for (i = streams.home.length - 1; i >= 0; i--){
-          show(streams.home[i]);
-        }
-        streams.home.push = function(){
-            for (var i = 0; i < arguments.length; i++){
-                this[this.length] = arguments[i];
-                show(arguments[i]);
-            }
-        };
-      });
+<head>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <script src="jquery.js"></script>
+  <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/velocity/0.7.0/jquery.velocity.min.js"></script>
+  <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/moment.js/2.7.0/moment.min.js"></script>
+  <script type="text/javascript" src="moment-twitter.js"></script>
+  <script src="data_generator.js"></script>
+</head>
+<body>
+<div class="home-stream"></div>
+<script>
+  moment().format();
+  moment().twitter();
 
-    </script>
-  </body>
+  var addNewTweet = function (tweet) {
+    var div = $('<div />');
+    div.addClass('tweet').data('username', tweet.user);
+    div.append($('<img />').addClass('avatar').attr('src', avatars[tweet.user]));
+    div.append($('<div />').addClass('username').text('@' + tweet.user));
+    div.append($('<div />').addClass('message').text(tweet.message));
+    div.append($('<div />').addClass('timestamp').data('created', tweet.created_at).text(moment(tweet.created_at).twitterShort()));
+    div.hide();
+    $('.home-stream').prepend(div)
+  };
+
+  var updateTimestamps = function () {
+    $.each($('.timestamp'), function (index, item) {
+      item = $(item);
+      item.text(moment(item.data('created')).twitterShort());
+    });
+    setTimeout(updateTimestamps, 1000);
+  };
+
+  var decorate = function (url, user) {
+    var canvas = document.createElement("canvas");
+    var img = new Image();
+
+    img.crossOrigin = true;
+    img.onload = function () {
+      canvas.height = img.height;
+      canvas.width = img.width;
+      canvas.getContext("2d").drawImage(img, 0, 0);
+      avatars[user] = canvas.toDataURL();
+      $.each($('.avatar').filter(function (index, item) {
+        return $(item).parent().data('username') === user;
+      }), function (index, item) {
+        $(item).attr('src', avatars[user]);
+      });
+      img = null;
+      canvas = null;
+    };
+    img.src = url;
+  };
+
+  $(document).ready(function () {
+    window.avatars = {};
+    for (var i = 0; i < users.length; i++) {
+      decorate("http://lorempixel.com/64/64/cats/" + (i + 1) + "/", users[i])
+    }
+    for (i = streams.home.length - 1; i >= 0; i--) {
+      addNewTweet(streams.home[i]);
+    }
+    $('.tweet:hidden').velocity('slideDown', {duration: 100});
+
+    streams.home.push = function () {
+      var hiddenTweets;
+      for (var i = 0; i < arguments.length; i++) {
+        this[this.length] = arguments[i];
+        if (window.moreBar === undefined) {
+          window.moreBar = $('<div />').addClass('more').append($('<div />').addClass('more-count')).hide()
+              .on('click', function(){
+                $(this).velocity('slideUp', {duration: 300}).detach();
+                $('.tweet:hidden').last().addClass('highlight');
+                $('.tweet:hidden').velocity('slideDown', {duration:500});
+                $('.highlight').first().velocity('scroll', {duration:500, offset:66}).removeClass('highlight');
+                //scrollTarget.removeClass('highlight')
+              });
+        }
+        if ($('.more').length === 0) {
+          $('.home-stream').prepend(window.moreBar)
+        }
+        addNewTweet(arguments[i]);
+        hiddenTweets = $('.tweet:hidden').length;
+        more = $('.more')
+        if (hiddenTweets === 1) {
+          $('.more-count').text('One new yowl');
+        } else {
+          $('.more-count').text(hiddenTweets.toString() + ' new yowls');
+        }
+        if (more.is(':hidden')) {
+          more.velocity('slideDown', {duration: 300});
+        }
+      }
+    };
+    updateTimestamps();
+  });
+
+</script>
+</body>
 </html>
