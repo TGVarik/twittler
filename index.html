@@ -31,6 +31,16 @@
     $('.home-stream').prepend(div)
   };
 
+  var showUser = function(user){
+    $('.tweet').filter(function(idx, el){
+      return $(el).data('username') !== user;
+    }).velocity('slideUp', {duration: 1000});
+  };
+
+  var showAll = function(){
+    $('.tweet:hidden').velocity('slideDown', {duration:1000});
+  };
+
   var updateTimestamps = function () {
     $.each($('.timestamp'), function (index, item) {
       item = $(item);
@@ -60,6 +70,13 @@
     img.src = url;
   };
 
+  var moreClickHandler = function(){
+    $(this).velocity('slideUp', {duration: 1000}).off('click').detach();
+    $('.tweet:visible:first').addClass('bookmark');
+    showAll();
+    $('.bookmark').first().velocity('scroll', {duration:1000}).removeClass('bookmark');
+  };
+
   $(document).ready(function () {
     window.avatars = {};
     for (var i = 0; i < users.length; i++) {
@@ -68,7 +85,12 @@
     for (i = streams.home.length - 1; i >= 0; i--) {
       addNewTweet(streams.home[i]);
     }
-    $('.tweet:hidden').velocity('slideDown', {duration: 100});
+
+    $('.home-stream').on('click', '.avatar, .username', function(){
+      showUser($(this).parent().data('username'));
+    });
+
+    showAll();
 
     streams.home.push = function () {
       var hiddenTweets;
@@ -76,16 +98,10 @@
         this[this.length] = arguments[i];
         if (window.moreBar === undefined) {
           window.moreBar = $('<div />').addClass('more').append($('<div />').addClass('more-count')).hide()
-              .on('click', function(){
-                // TODO: fix this hackery
-                $(this).velocity('slideUp', {duration: 300}).detach();
-                $('.tweet:hidden').last().addClass('highlight');
-                $('.tweet:hidden').velocity('slideDown', {duration:500});
-                $('.highlight').first().velocity('scroll', {duration:500, offset:66}).removeClass('highlight');
-              });
+              .on('click', moreClickHandler);
         }
         if ($('.more').length === 0) {
-          $('.home-stream').prepend(window.moreBar)
+          $('.home-stream').prepend(window.moreBar.on('click', moreClickHandler))
         }
         addNewTweet(arguments[i]);
         hiddenTweets = $('.tweet:hidden').length;
@@ -96,7 +112,7 @@
           $('.more-count').text(hiddenTweets.toString() + ' new yowls');
         }
         if (more.is(':hidden')) {
-          more.velocity('slideDown', {duration: 300});
+          more.velocity('slideDown', {duration: 1000});
         }
       }
     };
